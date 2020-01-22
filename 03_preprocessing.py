@@ -1,7 +1,6 @@
 from swann.utils import (get_config, get_layout,
-                         exclude_subjects, get_behf,
-                         get_no_responses)
-from swann.preprocessing import find_ica, mark_autoreject
+                         exclude_subjects, my_events)
+from swann.preprocessing import find_ica, apply_ica, mark_autoreject
 from swann.viz import plot_find_bads, plot_ica
 
 config = get_config()
@@ -31,6 +30,6 @@ for eegf in eegfs:
 
 # this will take even longer ~20+ minutes per subject depending on task length
 for eegf in eegfs:
-    behf = get_behf(eegf)
-    no_responses = get_no_responses(behf)
-    mark_autoreject(eegf, overwrite=overwrite_eeg)
+    raw = apply_ica(eegf)
+    for event in my_events():
+        mark_autoreject(eegf, raw, event, overwrite=overwrite_eeg)
