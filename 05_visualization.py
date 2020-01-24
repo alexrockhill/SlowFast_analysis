@@ -25,7 +25,8 @@ np.random.seed(config['seed'])
 
 # loop across subjects
 infos = list()
-these_events_all = dict()
+these_events_all = {name: {event: dict() for event in my_events()}
+                    for name in ['All', 'Slow', 'Fast']}
 for eegf in eegfs:
     behf = get_behf(eegf)
     all_indices, slow_indices, fast_indices = slowfast2epochs_indices(behf)
@@ -36,21 +37,20 @@ for eegf in eegfs:
     events = get_events(raw, exclude_events=epo_reject_indices)
     raw = pick_data(raw)
     infos.append(raw.info)
-    these_events_all[eegf.path] = dict()
     '''
     for event in events:
-        indices = np.random.choice(range(events[event].shape[0]), 10)
-        these_events = select_events(events[event], indices,
+        these_events = select_events(events[event], all_indices,
                                      epo_reject_indices[event])
-        plot_spectrogram(eegf, raw, event, these_events, overwrite=overwrite)
+        indices = np.random.choice(range(len(these_events)), 40, replace=False)
+        plot_spectrogram(eegf, raw, event, these_events[indices], columns=4,
+                         overwrite=overwrite)
     '''
     for name, indices in {'All': all_indices, 'Slow': slow_indices,
                           'Fast': fast_indices}.items():
-        these_events_all[eegf.path][name] = dict()
         for event in events:
             these_events = select_events(events[event], indices,
                                          epo_reject_indices[event])
-            these_events_all[eegf.path][name][event] = these_events
+            these_events_all[name][event][eegf.path] = these_events
             '''plot_bursting(eegf, name, event, raw.info,
                           these_events, overwrite=overwrite)
             plot_bursting(eegf, name, event, raw.info, these_events,
