@@ -78,3 +78,5 @@ for event in my_events():
                     'Fast': these_events_all[event]['Fast']}
     plot_group_bursting(eegf, event, these_events,
                         picks=['C3', 'C4'], overwrite=overwrite)
+    plot_group_bursting(eegf, event, these_events, method='durations',
+                        picks=['C3', 'C4'], overwrite=overwrite)
