@@ -25,8 +25,8 @@ np.random.seed(config['seed'])
 
 # loop across subjects
 infos = list()
-these_events_all = {name: {event: dict() for event in my_events()}
-                    for name in ['All', 'Slow', 'Fast']}
+these_events_all = {event: {name: dict() for name in ['All', 'Slow', 'Fast']}
+                    for event in my_events()}
 for eegf in eegfs:
     behf = get_behf(eegf)
     all_indices, slow_indices, fast_indices = slowfast2epochs_indices(behf)
@@ -37,40 +37,44 @@ for eegf in eegfs:
     events = get_events(raw, exclude_events=epo_reject_indices)
     raw = pick_data(raw)
     infos.append(raw.info)
-    '''
     for event in events:
         these_events = select_events(events[event], all_indices,
                                      epo_reject_indices[event])
-        indices = np.random.choice(range(len(these_events)), 40, replace=False)
+        indices = sorted(np.random.choice(range(len(these_events)),
+                         40, replace=False))
         plot_spectrogram(eegf, raw, event, these_events[indices], columns=4,
-                         overwrite=overwrite)
-    '''
-    for name, indices in {'All': all_indices, 'Slow': slow_indices,
-                          'Fast': fast_indices}.items():
-        for event in events:
+                         plot_bursts=True, overwrite=overwrite)
+    for event in events:
+        for name, indices in {'All': all_indices, 'Slow': slow_indices,
+                              'Fast': fast_indices}.items():
             these_events = select_events(events[event], indices,
                                          epo_reject_indices[event])
-            these_events_all[name][event][eegf.path] = these_events
-            '''plot_bursting(eegf, name, event, raw.info,
-                          these_events, overwrite=overwrite)
-            plot_bursting(eegf, name, event, raw.info, these_events,
-                          picks=['C3', 'C4'], overwrite=overwrite)
-            plot_power(eegf, name, event, raw.info,
-                       these_events, overwrite=overwrite)
-            plot_power(eegf, name, event, raw.info,
-                       these_events, picks=['C3', 'C4'], overwrite=overwrite)
-            plot_burst_shape(eegf, name, event, raw.info,
-                             these_events, overwrite=overwrite)'''
+            these_events_all[event][name][eegf.path] = these_events
+        '''plot_bursting(eegf, event, {name: these_events},
+                         raw.info, overwrite=overwrite)
+        plot_bursting(eegf, name, event, {name: these_events},
+                      raw.info, picks=['C3', 'C4'], overwrite=overwrite)
+        plot_power(eegf, event, {name: these_events},
+                   raw.info, overwrite=overwrite)
+        plot_power(eegf, event, {name: these_events},
+                   raw.info, picks=['C3', 'C4'], overwrite=overwrite)
+        plot_burst_shape(eegf, event, {name: these_events},
+                         raw.info, overwrite=overwrite)'''
 
 for name, indices in {'All': all_indices, 'Slow': slow_indices,
                       'Fast': fast_indices}.items():
     for event in events:
-        plot_group_bursting(eegfs, name, event, infos,
-                            these_events_all, overwrite=overwrite)
-        plot_group_bursting(eegf, name, event, infos, these_events_all,
-                            picks=['C3', 'C4'], overwrite=overwrite)
-        plot_group_power(eegfs, name, event, infos,
-                         these_events_all, overwrite=overwrite)
-        plot_group_power(eegfs, name, event, infos,
-                         these_events_all, picks=['C3', 'C4'],
-                         overwrite=overwrite)
+        plot_group_bursting(eegfs, event, these_events_all[event],
+                            infos, overwrite=overwrite)
+        plot_group_bursting(eegf, event, these_events_all[event],
+                            infos, picks=['C3', 'C4'], overwrite=overwrite)
+        plot_group_power(eegfs, event, these_events_all[event],
+                         infos, overwrite=overwrite)
+        plot_group_power(eegfs, event, these_events_all[event],
+                         infos, picks=['C3', 'C4'], overwrite=overwrite)
+
+for event in my_events():
+    these_events = {'Slow': these_events_all[event]['Slow'],
+                    'Fast': these_events_all[event]['Fast']}
+    plot_group_bursting(eegf, event, these_events,
+                        picks=['C3', 'C4'], overwrite=overwrite)
