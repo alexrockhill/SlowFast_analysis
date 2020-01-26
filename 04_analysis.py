@@ -1,5 +1,6 @@
 from swann.utils import (get_config, get_layout,
                          exclude_subjects)
+from swann.preprocessing import apply_ica
 from swann.analyses import decompose_tfr, find_bursts
 
 config = get_config()
@@ -17,7 +18,8 @@ overwrite = \
 
 # loop across subjects: may take ~10 minutes each
 for eegf in eegfs:
-    decompose_tfr(eegf, overwrite=overwrite)  # defaults to beta
+    raw = apply_ica(eegf)
+    decompose_tfr(eegf, raw, overwrite=overwrite)  # defaults to beta
 
 for eegf in eegfs:
     tfr, ch_names, sfreq = decompose_tfr(eegf, return_saved=True)
