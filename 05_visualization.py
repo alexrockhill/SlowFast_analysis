@@ -48,16 +48,14 @@ for eegf in eegfs:
             these_events = select_events(events[event], indices,
                                          epo_reject_indices[event])
             these_events_all[event][name][eegf.path] = these_events
-        '''plot_bursting(eegf, event, {name: these_events},
-                         overwrite=overwrite)
-        plot_bursting(eegf, name, event, {name: these_events},
-                      picks=['C3', 'C4'], overwrite=overwrite)
-        plot_power(eegf, event, {name: these_events},
-                   overwrite=overwrite)
-        plot_power(eegf, event, {name: these_events},
-                   picks=['C3', 'C4'], overwrite=overwrite)
-        plot_burst_shape(eegf, event, {name: these_events},
-                         raw.info, overwrite=overwrite)'''
+            plot_bursting(eegf, event, {name: these_events},
+                          overwrite=overwrite)
+            plot_bursting(eegf, name, event, {name: these_events},
+                          picks=['C3', 'C4'], overwrite=overwrite)
+            plot_power(eegf, event, {name: these_events},
+                       overwrite=overwrite)
+            plot_power(eegf, event, {name: these_events},
+                       picks=['C3', 'C4'], overwrite=overwrite)
 
 for name, indices in {'All': all_indices, 'Slow': slow_indices,
                       'Fast': fast_indices}.items():
@@ -74,6 +72,8 @@ for name, indices in {'All': all_indices, 'Slow': slow_indices,
 for event in my_events():
     these_events = {'Slow': these_events_all[event]['Slow'],
                     'Fast': these_events_all[event]['Fast']}
+    plot_group_bursting(eegfs, event, {'All': these_events_all[event]['All']},
+                        picks=['C3'], overwrite=overwrite)
     plot_group_bursting(eegfs, event, these_events,
                         picks=['C3', 'C4'], overwrite=overwrite)
     plot_group_bursting(eegfs, event, these_events, method='durations',
