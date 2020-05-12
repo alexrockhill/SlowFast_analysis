@@ -1,5 +1,5 @@
 {
-    "bids_dir": "/home/alex/SwannLab/SlowFast_BIDS",
+    "bids_dir": "/Users/alexrockhill/education/UO/SwannLab/SlowFast_BIDS",
     "task": "SlowFast",
     "p_value": 0.05,
     "stimuli": {"Fixation": [1, 2],
